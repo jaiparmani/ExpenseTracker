@@ -18,10 +18,10 @@ class Expense:
 
     def to_dict(self) -> Dict:
         return {
-            "description": self.desc,
-            "amount": self.amt,
+            "desc": self.desc,
+            "amt": self.amt,
             "category": self.category,
-            "timestamp": self.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
+            "timestamp": self.timestamp#.strftime("%Y-%m-%d %H:%M:%S"),
         }
 
 
@@ -81,8 +81,8 @@ def expenses(user_id: int):
         return jsonify([expense.to_dict() for expense in expenses])
     elif request.method == "POST":
         data = request.get_json()
-        desc = data.get("description", "")
-        amt = data.get("amount", 0.0)
+        desc = data.get("desc", "")
+        amt = data.get("amt", 0.0)
         category = data.get("category", "")
         timestamp = datetime.now()
         result = add_expense(f"user{user_id}", desc, amt, category, timestamp)
@@ -94,6 +94,12 @@ def expenses_by_category(user_id: int, category: str):
     expenses = get_expenses_by_category(f"user{user_id}", category)
     return jsonify([expense.to_dict() for expense in expenses])
 
-
+@app.route("/")
+def hello():
+    return "Hello"
+from datetime import datetime
 if __name__ == "__main__":
+
+    add_expense("user1","Khana", 100, "food", "")
+
     app.run(debug=True)
