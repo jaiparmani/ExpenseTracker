@@ -87,7 +87,6 @@ def expenses(user_id: int):
     print("Fuk")
     if request.method == "GET":
         expenses = get_expenses(f"user{user_id}")
-        p
         return jsonify([expense.to_dict() for expense in expenses])
     elif request.method == "POST":
         print("adding useer")
