@@ -3,8 +3,11 @@ from datetime import datetime
 from typing import Dict, List
 
 from flask import Flask, jsonify, request
+from flask_cors import CORS, cross_origin
 
 app = Flask(__name__)
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 filepath = "data.json"
 
@@ -47,13 +50,17 @@ def load_data() -> Dict:
 
 def save_data(data: Dict) -> None:
     with open(filepath, "w") as f:
+        print('dumping te data')
         json.dump(data, f)
+    print("Dumped")
 
 
 def add_expense(username: str, desc: str, amt: float, category: str, timestamp: datetime) -> str:
+    print("Adiding inside ad_expsen")
     data = load_data()
     if username not in data:
         data[username] = {"expenses": []}
+
     user = User(username, [Expense(desc, amt, category, timestamp)])
     data[username]["expenses"].append(user.to_dict()["expenses"][0])
     save_data(data)
@@ -75,19 +82,25 @@ def get_expenses_by_category(username: str, category: str) -> List[Expense]:
 
 
 @app.route("/api/users/<int:user_id>/expenses", methods=["GET", "POST"])
+@cross_origin()
 def expenses(user_id: int):
+    print("Fuk")
     if request.method == "GET":
         expenses = get_expenses(f"user{user_id}")
+        p
         return jsonify([expense.to_dict() for expense in expenses])
     elif request.method == "POST":
+        print("adding useer")
         data = request.get_json()
         desc = data.get("desc", "")
         amt = data.get("amt", 0.0)
         category = data.get("category", "")
-        timestamp = datetime.now()
+        timestamp = str(datetime.now())
         result = add_expense(f"user{user_id}", desc, amt, category, timestamp)
+        print("Added")
         return jsonify({"result": result})
-
+    else:
+        print("LkAT GAYA",request.method)
 
 @app.route("/api/users/<int:user_id>/categories/<category>", methods=["GET"])
 def expenses_by_category(user_id: int, category: str):
